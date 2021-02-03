@@ -13,7 +13,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/", postRouter);
+app.use("/api/v1/posts", postRouter);
 app.use("/api/v1/users", userRouter);
 
 module.exports = app;
