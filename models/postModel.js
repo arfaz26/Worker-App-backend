@@ -10,11 +10,13 @@ const postSchema = new mongoose.Schema({
   },
   location: {
     type: String,
+    required: [true, "Post must have a location"],
   },
   category: {
     type: String,
+    required: [true, "Post must have a category"],
     enum: {
-      values: ["helper", "plumber", "paint"],
+      values: ["helper", "plumber", "paint", "other"],
       message: "category is either: helper, plumber, paint",
     },
   },

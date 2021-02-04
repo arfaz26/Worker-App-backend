@@ -15,8 +15,6 @@ const DB = process.env.DATABASE.replace(
   "<PASSWORD>",
   process.env.DATABASE_PASSWORD
 );
-console.log(DB);
-// console.log(process.env.MONGODB_URI);
 mongoose
   .connect(DB, {
     useUnifiedTopology: true,
@@ -29,7 +27,6 @@ const port = process.env.PORT || 8000;
 
 app.listen(port, () => {
   console.log(`listening at ${port}`);
-  // console.log(DB);
 });
 
 process.on("unhandledRejection", (err) => {
