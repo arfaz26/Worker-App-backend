@@ -1,4 +1,6 @@
 const express = require("express");
+const helmet = require("helmet");
+const mongoSanitize = require("express-mongo-sanitize");
 const morgan = require("morgan");
 const postRouter = require("./routes/postRoutes");
 const userRouter = require("./routes/userRoutes");
@@ -8,6 +10,8 @@ const AppError = require("./utils/appError");
 const app = express();
 
 app.use(express.json());
+app.use(helmet());
+app.use(mongoSanitize());
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));

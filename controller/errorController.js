@@ -93,10 +93,18 @@ const handleValidationErrorDB = (err) => {
   return new AppError(message, 400);
 };
 
+const handleCastErrorDB = (err) => {
+  const message = `Invalid ${err.path === "_id" ? "id" : err.path}: ${
+    err.value
+  }.`;
+  return new AppError(message, 400);
+};
+
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
     status: err.status,
     error: err,
+    name: err.name,
     message: err.message,
     stack: err.stack,
   });
@@ -132,6 +140,7 @@ module.exports = (err, req, res, next) => {
   } else if (process.env.NODE_ENV === "production") {
     let error = { ...err };
     if (err.name === "ValidationError") error = handleValidationErrorDB(error);
+    if (err.name === "CastError") error = handleCastErrorDB(error);
 
     sendErrorProd(error, res);
   }
