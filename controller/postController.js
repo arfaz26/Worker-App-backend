@@ -43,7 +43,7 @@ exports.updatePost = catchAsync(async (req, res, next) => {
     new: true,
   });
   if (!post) return next(new AppError("No document found with that ID", 404));
-  res.status(201).json({
+  res.status(200).json({
     status: "success",
     data: {
       post,
