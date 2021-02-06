@@ -37,3 +37,16 @@ exports.getPost = catchAsync(async (req, res, next) => {
     },
   });
 });
+exports.updatePost = catchAsync(async (req, res, next) => {
+  const post = await Post.findByIdAndUpdate(req.params.id, req.body, {
+    runValidators: true,
+    new: true,
+  });
+  if (!post) return next(new AppError("No document found with that ID", 404));
+  res.status(201).json({
+    status: "success",
+    data: {
+      post,
+    },
+  });
+});

@@ -8,7 +8,10 @@ router
   .get(postController.getAllPosts)
   .post(postController.createPost);
 
-module.exports = router;
-
-router.route("/:id").get(postController.getPost);
+router
+  .route("/:id")
+  .get(postController.getPost)
+  .patch(postController.updatePost);
 // mYrjVDVCjPpd6LAT
+
+module.exports = router;
