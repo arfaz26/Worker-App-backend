@@ -84,6 +84,7 @@
 //   }
 // };
 
+const app = require("../app");
 const AppError = require("../utils/appError");
 
 const handleValidationErrorDB = (err) => {
@@ -97,6 +98,11 @@ const handleCastErrorDB = (err) => {
   const message = `Invalid ${err.path === "_id" ? "id" : err.path}: ${
     err.value
   }.`;
+  return new AppError(message, 400);
+};
+
+const handleNoData = (err) => {
+  const message = err.message;
   return new AppError(message, 400);
 };
 
@@ -141,6 +147,7 @@ module.exports = (err, req, res, next) => {
     let error = { ...err };
     if (err.name === "ValidationError") error = handleValidationErrorDB(error);
     if (err.name === "CastError") error = handleCastErrorDB(error);
+    if (err.name === "Error") error = handleNoData(err);
 
     sendErrorProd(error, res);
   }
