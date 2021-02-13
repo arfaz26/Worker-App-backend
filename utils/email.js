@@ -9,6 +9,10 @@ const sendEmail = async (options) => {
       user: process.env.EMAIL_ID,
       pass: process.env.EMAIL_PASSWORD,
     },
+    tls: {
+      // do not fail on invalid certs
+      rejectUnauthorized: false,
+    },
   });
   // 2) define email options
 
