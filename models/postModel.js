@@ -12,6 +12,12 @@ const postSchema = new mongoose.Schema({
     type: String,
     required: [true, "Post must have a location"],
   },
+  user: {
+    type: mongoose.Schema.ObjectId,
+    ref: "User",
+    required: [true, "Post must belong to a user"],
+  },
+
   category: {
     type: String,
     required: [true, "Post must have a category"],
@@ -31,6 +37,10 @@ const postSchema = new mongoose.Schema({
   contact: {
     type: Number,
   },
+  isActive: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 // description, range budget, active
@@ -41,6 +51,14 @@ const postSchema = new mongoose.Schema({
 
 // postSchema.post(/^find/, function (next) {
 //   this.populate({ select: "-__v" });
+// });
+
+// postSchema.pre(/^find/, function (next) {
+//   this.populate({
+//     path: "user",
+//     select: "name email",
+//   });
+//   next();
 // });
 
 const Post = mongoose.model("Post", postSchema);
