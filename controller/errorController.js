@@ -115,6 +115,10 @@ const handleDuplicateFieldsDB = (err) => {
   return new AppError(message, 400);
 };
 
+const invalidData = (err) => {
+  return new AppError("Invalid Data provided", err.status);
+};
+
 const sendErrorDev = (err, res) => {
   console.log("in send errorDEv");
   res.status(err.statusCode).json({
@@ -158,11 +162,12 @@ module.exports = (err, req, res, next) => {
     sendErrorDev(err, res);
   } else if (process.env.NODE_ENV === "production") {
     let error = { ...err };
+    // console.log(err);
     if (err.name === "ValidationError") error = handleValidationErrorDB(error);
     if (err.name === "CastError") error = handleCastErrorDB(error);
     if (err.code === 11000) error = handleDuplicateFieldsDB(err);
     if (err.name === "Error") error = handleNoData(err);
-
+    if (err.code === 60200) error = invalidData(err);
     sendErrorProd(error, res);
   }
 };

@@ -27,6 +27,10 @@ const userSchema = new mongoose.Schema({
     minlength: 8,
     select: false,
   },
+  isPhoneVerified: {
+    type: Boolean,
+    default: false,
+  },
   __v: {
     type: Number,
     select: false,

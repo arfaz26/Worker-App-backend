@@ -10,6 +10,8 @@ exports.createApplication = catchAsync(async (req, res, next) => {
   const post = await Post.findByIdAndUpdate(req.params.id);
   if (!post.isActive) return next(new AppError("Post is not active", 404));
 
+  if (!req.user.isPhoneVerified)
+    return next(new AppError("Please verify your phone number", 404));
   const application = await Application.create({
     user: req.user._id,
     post: req.params.id,
