@@ -256,8 +256,9 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 
 exports.updateMe = catchAsync(async (req, res, next) => {
   let response;
+  // console.log()
   if (req.file) {
-    console.log(req.file.path);
+    console.log(req.file);
     response = await cloudinary.uploader.upload(`${req.file.path}`, {
       folder: "worker-app/user",
       public_id: req.file.filename.split(".")[0],

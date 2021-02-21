@@ -38,6 +38,7 @@ exports.resizeImages = catchAsync(async (req, res, next) => {
   req.body.imagesArray = [];
   if (!req.files) return next();
 
+  console.log(req.files);
   await Promise.all(
     req.files.map(async (image, i) => {
       const filename = uuid.v4() + ".jpeg";
