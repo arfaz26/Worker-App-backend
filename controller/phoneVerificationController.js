@@ -4,6 +4,7 @@ const client = require("twilio")(
   process.env.TWILIO_ACCOUNT_SID,
   process.env.TWILIO_AUTH_TOKEN
 );
+const User = require("../models/userModel");
 
 exports.sendOtp = catchAsync(async (req, res, next) => {
   const verification = await client.verify
@@ -29,13 +30,33 @@ exports.verifyOtp = catchAsync(async (req, res, next) => {
       code: req.body.code,
     });
 
-  console.log(verification_check.status);
+  // console.log(verification_check.status);
 
   if (verification_check.status !== "approved")
     return next(new AppError("Verification Failed, try again", 401));
+
+  // console.log(req.user);
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      isPhoneVerified: true,
+    },
+    {
+      runValidators: true,
+      new: true,
+    }
+  );
+  // console.log(user);
+  // const updatedUser = await User.updateOne(
+  //   { _id: req.user._id },
+  //   { isPhoneVerified: !req.user.isPhoneVerified }
+  // );
+  // console.log(updatedUser);
+  // req.user.isPhonever
   res.status(200).json({
     data: {
-      verification_check,
+      // verification_check,
+      user,
     },
   });
 });

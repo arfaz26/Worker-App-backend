@@ -1,17 +1,55 @@
+const fs = require("fs");
 const { promisify } = require("util");
 const crypto = require("crypto");
+const cloudinary = require("cloudinary").v2;
 const jwt = require("jsonwebtoken");
+// const streamifier = require("streamifier");
+const multer = require("multer");
 const User = require("../models/userModel");
 
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const sendEmail = require("../utils/email");
 
+const multerStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/user");
+  },
+  filename: (req, file, cb) => {
+    const ext = file.mimetype.split("/")[1];
+    cb(null, `user-${req.user._id}-${Date.now()}.${ext}`);
+  },
+});
+
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image")) {
+    cb(null, true);
+  } else {
+    cb(new AppError("Not an image! please upload only image", 400), false);
+  }
+};
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+
+exports.uploadUserPhoto = upload.single("avatar");
+
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 };
+
+exports.getMyDetails = catchAsync(async (req, res, next) => {
+  const user = await User.findById(req.user._id);
+  res.status(200).json({
+    status: "success",
+    data: {
+      user,
+    },
+  });
+});
 
 exports.signIn = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
@@ -24,6 +62,8 @@ exports.signIn = catchAsync(async (req, res, next) => {
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError("Incorrect email or password", 401));
   }
+
+  console.log(req.user);
   res.status(200).json({
     status: "success",
     token: signToken(user._id),
@@ -59,6 +99,12 @@ exports.restrictTo = (...roles) => {
   };
 };
 
+exports.phoneVerificationCheck = catchAsync(async (req, res, next) => {
+  if (!req.user.isPhoneVerified)
+    return next(new AppError("Please verify your phone number", 404));
+  next();
+});
+
 exports.protect = catchAsync(async (req, res, next) => {
   // 1) getting token if its there
   let token;
@@ -73,13 +119,13 @@ exports.protect = catchAsync(async (req, res, next) => {
       new AppError("You are not logged in! Please log in to get access.", 401)
     );
   }
-
+  // console.log(token);
   // 2) verify the token
 
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
   // 3) check if user still exists
-
+  // console.log(decoded.id);
   const currentUser = await User.findById(decoded.id);
 
   if (!currentUser) {
@@ -97,8 +143,15 @@ exports.protect = catchAsync(async (req, res, next) => {
       new AppError("User recently changed password! Please log in again.", 401)
     );
   }
+  // console.log("------------");
+  //
+  // console.log(currentUser);
   // 5) grant access
   req.user = currentUser;
+  // console.log("------------");
+  // console.log(req.user);
+  // console.log("------------");
+
   next();
 });
 
@@ -197,6 +250,35 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
     data: {
       token: signToken(user._id),
       user,
+    },
+  });
+});
+
+exports.updateMe = catchAsync(async (req, res, next) => {
+  let response;
+  if (req.file) {
+    console.log(req.file.path);
+    response = await cloudinary.uploader.upload(`${req.file.path}`, {
+      folder: "worker-app/user",
+      public_id: req.file.filename.split(".")[0],
+      use_filename: true,
+    });
+
+    fs.unlink(req.file.path, () => {});
+  }
+
+  const patch = {
+    photoUrl: req.file ? response.url : req.user.photoUrl,
+    name: req.body.name ? req.body.name : req.user.name,
+  };
+  const updatedUser = await User.findByIdAndUpdate(req.user._id, patch, {
+    new: true,
+  });
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      updatedUser,
     },
   });
 });

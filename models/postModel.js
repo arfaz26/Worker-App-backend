@@ -17,7 +17,7 @@ const postSchema = new mongoose.Schema({
     ref: "User",
     required: [true, "Post must belong to a user"],
   },
-
+  images: [String],
   category: {
     type: String,
     required: [true, "Post must have a category"],

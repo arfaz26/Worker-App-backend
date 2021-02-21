@@ -31,6 +31,11 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  photoUrl: {
+    type: String,
+    default:
+      "https://res.cloudinary.com/cloud-arfaz26/image/upload/v1613654922/worker-app/profle_default_gwyfhz.jpg",
+  },
   __v: {
     type: Number,
     select: false,

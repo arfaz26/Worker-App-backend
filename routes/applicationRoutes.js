@@ -6,11 +6,13 @@ const router = express.Router();
 router
   .route("/getMyApplication")
   .get(authController.protect, applicationController.getMyApplications);
+
 router
   .route("/:id")
   .post(
     authController.protect,
     authController.restrictTo("worker"),
+    authController.phoneVerificationCheck,
     applicationController.createApplication
   );
 
@@ -25,4 +27,7 @@ router
     applicationController.getCurrentPostApplications
   );
 
+router
+  .route("/updateStatus/:id")
+  .patch(authController.protect, applicationController.updateApplicationStatus);
 module.exports = router;

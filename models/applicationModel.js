@@ -15,6 +15,12 @@ const applicationSchema = new mongoose.Schema({
     type: Date,
     default: Date(),
   },
+  status: {
+    type: String,
+    required: true,
+    enum: ["applied", "selected", "not selected"],
+    default: "applied",
+  },
 });
 
 const application = mongoose.model("Application", applicationSchema);

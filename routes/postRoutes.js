@@ -10,6 +10,10 @@ router
   .post(
     authController.protect,
     authController.restrictTo("recruiter"),
+    authController.phoneVerificationCheck,
+    postController.uploadPostImages,
+    postController.resizeImages,
+    postController.uploadPostImagesToCloud,
     postController.createPost
   );
 

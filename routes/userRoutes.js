@@ -1,4 +1,5 @@
 const express = require("express");
+
 const authController = require("../controller/authController");
 const userController = require("../controller/userController");
 
@@ -13,6 +14,11 @@ router.route("/resetPassword/:token").patch(authController.resetPassword);
 router.use(authController.protect);
 router.route("/updateMyPassword/").patch(authController.updatePassword);
 router.route("/").get(userController.getAllUsers);
+
+router.route("/getMyDetails").get(authController.getMyDetails);
+router
+  .route("/updateMe")
+  .patch(authController.uploadUserPhoto, authController.updateMe);
 
 // router.route("/getAllUser").get(userController.getAllUsers);
 

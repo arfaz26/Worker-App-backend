@@ -1,8 +1,75 @@
+const fs = require("fs");
+const multer = require("multer");
+const sharp = require("sharp");
+const cloudinary = require("cloudinary");
+var uuid = require("uuid");
 const AppError = require("../utils/appError");
-// const mongoose = require("mongoose");
 const Post = require("../models/postModel");
 const catchAsync = require("../utils/catchAsync");
 const ApiFeatures = require("../utils/apiFeatures");
+
+// const multerStorage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, "uploads/posts");
+//   },
+//   filename: (req, file, cb) => {
+//     const ext = file.mimetype.split("/")[1];
+//     cb(null, `user-${req.user._id}-${Date.now()}.${ext}`);
+//   },
+// });
+const multerStorage = multer.memoryStorage();
+
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image")) {
+    cb(null, true);
+  } else {
+    cb(new AppError("Not an image! please upload only image", 400), false);
+  }
+};
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+
+exports.uploadPostImages = upload.array("images", 4);
+
+exports.resizeImages = catchAsync(async (req, res, next) => {
+  req.body.imagesArray = [];
+  if (!req.files) return next();
+
+  await Promise.all(
+    req.files.map(async (image, i) => {
+      const filename = uuid.v4() + ".jpeg";
+      const myImage = await sharp(image.buffer)
+        .resize(1200, 800, {
+          fit: "contain",
+        })
+        .toFormat("jpeg")
+        .jpeg({ quality: 90 })
+        .toFile(`uploads/posts/${filename}`);
+      const imgUrl = `uploads/posts/${filename}`;
+
+      req.body.imagesArray.push(imgUrl);
+    })
+  );
+  next();
+});
+
+exports.uploadPostImagesToCloud = catchAsync(async (req, res, next) => {
+  if (req.files) {
+    req.body.imagesUrl = [];
+    await Promise.all(
+      req.body.imagesArray.map(async (imgUrl, i) => {
+        response = await cloudinary.uploader.upload(imgUrl);
+        req.body.imagesUrl.push(response.url);
+        fs.unlink(imgUrl, () => {});
+      })
+    );
+    // console.log("cloudurl: ", req.body.imagesUrl);
+  }
+  next();
+});
 
 exports.getAllPosts = catchAsync(async (req, res, next) => {
   // console.log(req.query);
@@ -27,13 +94,17 @@ exports.getAllPosts = catchAsync(async (req, res, next) => {
 });
 
 exports.createPost = catchAsync(async (req, res, next) => {
-  const post = await Post.create({
+  // console.log(req.body.imagesArray);
+  const postData = {
     title: req.body.title,
     location: req.body.location,
     contact: req.body.contact,
     user: req.user._id,
     category: req.body.category,
-  });
+    images: req.body.imagesUrl ? req.body.imagesUrl : [],
+  };
+
+  const post = await Post.create(postData);
   res.status(201).json({
     status: "success",
     data: {
@@ -42,11 +113,11 @@ exports.createPost = catchAsync(async (req, res, next) => {
   });
 });
 exports.getPost = catchAsync(async (req, res, next) => {
-  const q = Post.findById(req.params.id).populate({
+  const query = Post.findById(req.params.id).populate({
     path: "user",
     select: "name email",
   });
-  const post = await q;
+  const post = await query;
   res.status(200).json({
     status: "success",
     data: {
