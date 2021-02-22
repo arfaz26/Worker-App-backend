@@ -3,8 +3,8 @@ const { promisify } = require("util");
 const crypto = require("crypto");
 const cloudinary = require("cloudinary").v2;
 const jwt = require("jsonwebtoken");
-
 const DatauriParser = require("datauri/parser");
+
 const parser = new DatauriParser();
 // const Datauri = require("datauri");
 // const streamifier = require("streamifier");
@@ -35,10 +35,11 @@ const multerFilter = (req, file, cb) => {
     cb(new AppError("Not an image! please upload only image", 400), false);
   }
 };
-const upload = multer({
-  storage: multerStorage,
-  fileFilter: multerFilter,
-});
+// const upload = multer({
+//   storage: multerStorage,
+//   fileFilter: multerFilter,
+// });
+const upload = multer();
 
 exports.demoOne = (req, res, next) => {
   console.log("in demo 1");
@@ -95,14 +96,14 @@ exports.signUp = catchAsync(async (req, res, next) => {
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
   });
-  (user.password = undefined),
-    res.status(201).json({
-      status: "success",
-      data: {
-        user,
-        token: signToken(user._id),
-      },
-    });
+  user.password = undefined;
+  res.status(201).json({
+    status: "success",
+    data: {
+      user,
+      token: signToken(user._id),
+    },
+  });
 });
 
 exports.restrictTo = (...roles) => {
