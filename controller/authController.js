@@ -268,14 +268,15 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     try {
       console.log(req.file);
       parser.format(".jpeg", req.file.buffer);
-      console.log("content: ", parser.content);
-      response = await cloudinary.uploader.upload(parser.content, {
-        folder: "worker-app/user",
-        public_id: `test ${Date.now()}`,
-        use_filename: true,
-      });
+      // console.log("content: ", parser.content);
+      // response = await cloudinary.uploader.upload(parser.content, {
+      //   folder: "worker-app/user",
+      //   public_id: `test ${Date.now()}`,
+      //   use_filename: true,
+      // });
     } catch (err) {
-      throw err;
+      // throw err;
+      console.log(err);
     }
   }
 
@@ -290,7 +291,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: "success",
     data: {
-      response,
+      // response,
       // updatedUser,
       // data: parser.content,
     },
