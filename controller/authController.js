@@ -3,6 +3,10 @@ const { promisify } = require("util");
 const crypto = require("crypto");
 const cloudinary = require("cloudinary").v2;
 const jwt = require("jsonwebtoken");
+
+const DatauriParser = require("datauri/parser");
+const parser = new DatauriParser();
+// const Datauri = require("datauri");
 // const streamifier = require("streamifier");
 const multer = require("multer");
 const User = require("../models/userModel");
@@ -11,15 +15,18 @@ const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const sendEmail = require("../utils/email");
 
-const multerStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/user");
-  },
-  filename: (req, file, cb) => {
-    const ext = file.mimetype.split("/")[1];
-    cb(null, `user-${req.user._id}-${Date.now()}.${ext}`);
-  },
-});
+// const datauri = new Datauri();
+// const multerStorage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, "uploads/user");
+//   },
+//   filename: (req, file, cb) => {
+//     const ext = file.mimetype.split("/")[1];
+//     cb(null, `user-${req.user._id}-${Date.now()}.${ext}`);
+//   },
+// });
+
+const multerStorage = multer.memoryStorage();
 
 const multerFilter = (req, file, cb) => {
   if (file.mimetype.startsWith("image")) {
@@ -256,30 +263,32 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 
 exports.updateMe = catchAsync(async (req, res, next) => {
   let response;
-  // console.log()
+  console.log("in updateMe");
   if (req.file) {
     console.log(req.file);
-    response = await cloudinary.uploader.upload(`${req.file.path}`, {
+    parser.format(".jpeg", req.file.buffer);
+    console.log("content: ", parser.content);
+    response = await cloudinary.uploader.upload(parser.content, {
       folder: "worker-app/user",
-      public_id: req.file.filename.split(".")[0],
+      public_id: `test ${Date.now()}`,
       use_filename: true,
     });
-
-    fs.unlink(req.file.path, () => {});
   }
 
-  const patch = {
-    photoUrl: req.file ? response.url : req.user.photoUrl,
-    name: req.body.name ? req.body.name : req.user.name,
-  };
-  const updatedUser = await User.findByIdAndUpdate(req.user._id, patch, {
-    new: true,
-  });
+  // const patch = {
+  //   photoUrl: req.file ? response.url : req.user.photoUrl,
+  //   name: req.body.name ? req.body.name : req.user.name,
+  // };
+  // const updatedUser = await User.findByIdAndUpdate(req.user._id, patch, {
+  //   new: true,
+  // });
 
   res.status(200).json({
     status: "success",
     data: {
-      updatedUser,
+      response,
+      // updatedUser,
+      // data: parser.content,
     },
   });
 });
