@@ -35,27 +35,17 @@ const multerFilter = (req, file, cb) => {
     cb(new AppError("Not an image! please upload only image", 400), false);
   }
 };
-// const upload = multer({
-//   storage: multerStorage,
-//   fileFilter: multerFilter,
-// });
-const upload = multer();
-
-exports.demoOne = (req, res, next) => {
-  console.log("in demo 1");
-  next();
-};
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter
+});
+// const upload = multer();
 
 exports.uploadUserPhoto = upload.single("avatar");
 
-exports.demoTwo = (req, res, next) => {
-  console.log("in demo 2");
-  next();
-};
-
-const signToken = (id) => {
+const signToken = id => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
+    expiresIn: process.env.JWT_EXPIRES_IN
   });
 };
 
@@ -64,8 +54,8 @@ exports.getMyDetails = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: "success",
     data: {
-      user,
-    },
+      user
+    }
   });
 });
 
@@ -84,7 +74,7 @@ exports.signIn = catchAsync(async (req, res, next) => {
   console.log(req.user);
   res.status(200).json({
     status: "success",
-    token: signToken(user._id),
+    token: signToken(user._id)
   });
 });
 
@@ -94,15 +84,15 @@ exports.signUp = catchAsync(async (req, res, next) => {
     role: req.body.role,
     email: req.body.email,
     password: req.body.password,
-    passwordConfirm: req.body.passwordConfirm,
+    passwordConfirm: req.body.passwordConfirm
   });
   user.password = undefined;
   res.status(201).json({
     status: "success",
     data: {
       user,
-      token: signToken(user._id),
-    },
+      token: signToken(user._id)
+    }
   });
 });
 
@@ -193,12 +183,12 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     await sendEmail({
       email: user.email,
       subject: `Your reset password link valid for 10 mins`,
-      message,
+      message
     });
 
     res.status(200).json({
       status: "success",
-      message: "email sent successfully",
+      message: "email sent successfully"
     });
   } catch (err) {
     user.passwordResetToken = undefined;
@@ -218,7 +208,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 
   const user = await User.findOne({
     passwordResetToken: hashedToken,
-    passwordResetExpires: { $gt: Date.now() },
+    passwordResetExpires: { $gt: Date.now() }
   });
 
   if (!user) {
@@ -240,8 +230,8 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     status: "success",
     data: {
       token: signToken(user._id),
-      user,
-    },
+      user
+    }
   });
 });
 
@@ -267,8 +257,8 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
     status: "success",
     data: {
       token: signToken(user._id),
-      user,
-    },
+      user
+    }
   });
 });
 
@@ -276,35 +266,34 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   let response;
   console.log("in updateMe");
   // if (req.file) {
-  try {
-    // console.log(req.file);
-    parser.format(".jpeg", req.file.buffer);
-    // console.log("content: ", parser.content);
-    response = await cloudinary.uploader.upload("uploads/user/test.jpeg", {
-      folder: "worker-app/user",
-      public_id: `test ${Date.now()}`,
-      use_filename: true,
-    });
-  } catch (err) {
-    // throw err;
-    console.log(err);
-  }
+  // try {
+  // console.log(req.file);
+  parser.format(".jpeg", req.file.buffer);
+  // console.log("content: ", parser.content);
+  response = await cloudinary.uploader.upload(parser.content, {
+    folder: "worker-app/user",
+    public_id: `test ${Date.now()}`,
+    use_filename: true
+  });
+  // } catch (err) {
+  //   // throw err;
+  //   console.log(err);
+  // }
   // }
 
-  // const patch = {
-  //   photoUrl: req.file ? response.url : req.user.photoUrl,
-  //   name: req.body.name ? req.body.name : req.user.name,
-  // };
-  // const updatedUser = await User.findByIdAndUpdate(req.user._id, patch, {
-  //   new: true,
-  // });
+  const patch = {
+    photoUrl: req.file ? response.url : req.user.photoUrl,
+    name: req.body.name ? req.body.name : req.user.name
+  };
+  const updatedUser = await User.findByIdAndUpdate(req.user._id, patch, {
+    new: true
+  });
+  req.user = updatedUser;
 
   res.status(200).json({
     status: "success",
     data: {
-      response,
-      // updatedUser,
-      // data: parser.content,
-    },
+      updatedUser
+    }
   });
 });

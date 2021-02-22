@@ -2,7 +2,7 @@ const fs = require("fs");
 const multer = require("multer");
 const sharp = require("sharp");
 const cloudinary = require("cloudinary");
-var uuid = require("uuid");
+const uuid = require("uuid");
 const AppError = require("../utils/appError");
 const Post = require("../models/postModel");
 const catchAsync = require("../utils/catchAsync");
@@ -29,7 +29,7 @@ const multerFilter = (req, file, cb) => {
 
 const upload = multer({
   storage: multerStorage,
-  fileFilter: multerFilter,
+  fileFilter: multerFilter
 });
 
 exports.uploadPostImages = upload.array("images", 4);
@@ -38,13 +38,13 @@ exports.resizeImages = catchAsync(async (req, res, next) => {
   req.body.imagesArray = [];
   if (!req.files) return next();
 
-  console.log(req.files);
+  // console.log(req.files);
   await Promise.all(
-    req.files.map(async (image, i) => {
+    req.files.map(async image => {
       const filename = uuid.v4() + ".jpeg";
       const myImage = await sharp(image.buffer)
         .resize(1200, 800, {
-          fit: "contain",
+          fit: "contain"
         })
         .toFormat("jpeg")
         .jpeg({ quality: 90 })
@@ -62,12 +62,16 @@ exports.uploadPostImagesToCloud = catchAsync(async (req, res, next) => {
     req.body.imagesUrl = [];
     await Promise.all(
       req.body.imagesArray.map(async (imgUrl, i) => {
-        response = await cloudinary.uploader.upload(imgUrl);
+        console.log(imgUrl);
+        const response = await cloudinary.uploader.upload(imgUrl, {
+          folder: "worker-app/user",
+          public_id: `test ${Date.now()}`,
+          use_filename: true
+        });
         req.body.imagesUrl.push(response.url);
         fs.unlink(imgUrl, () => {});
       })
     );
-    // console.log("cloudurl: ", req.body.imagesUrl);
   }
   next();
 });
@@ -89,8 +93,8 @@ exports.getAllPosts = catchAsync(async (req, res, next) => {
     status: "success",
     result: posts.length,
     data: {
-      posts,
-    },
+      posts
+    }
   });
 });
 
@@ -102,41 +106,41 @@ exports.createPost = catchAsync(async (req, res, next) => {
     contact: req.body.contact,
     user: req.user._id,
     category: req.body.category,
-    images: req.body.imagesUrl ? req.body.imagesUrl : [],
+    images: req.body.imagesUrl ? req.body.imagesUrl : []
   };
 
   const post = await Post.create(postData);
   res.status(201).json({
     status: "success",
     data: {
-      post,
-    },
+      post
+    }
   });
 });
 exports.getPost = catchAsync(async (req, res, next) => {
   const query = Post.findById(req.params.id).populate({
     path: "user",
-    select: "name email",
+    select: "name email"
   });
   const post = await query;
   res.status(200).json({
     status: "success",
     data: {
-      post,
-    },
+      post
+    }
   });
 });
 exports.updatePost = catchAsync(async (req, res, next) => {
   const post = await Post.findByIdAndUpdate(req.params.id, req.body, {
     runValidators: true,
-    new: true,
+    new: true
   });
   if (!post) return next(new AppError("No document found with that ID", 404));
   res.status(200).json({
     status: "success",
     data: {
-      post,
-    },
+      post
+    }
   });
 });
 
@@ -145,14 +149,13 @@ exports.getMyPosts = catchAsync(async (req, res, next) => {
   const userId = req.user._id;
 
   // get posts of that user
-
   const posts = await Post.find({ user: userId });
 
   res.status(200).json({
     status: "success",
     result: posts.length,
     data: {
-      posts,
-    },
+      posts
+    }
   });
 });
