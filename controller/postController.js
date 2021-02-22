@@ -62,7 +62,6 @@ exports.uploadPostImagesToCloud = catchAsync(async (req, res, next) => {
     req.body.imagesUrl = [];
     await Promise.all(
       req.body.imagesArray.map(async (imgUrl, i) => {
-        console.log(imgUrl);
         const response = await cloudinary.uploader.upload(imgUrl, {
           folder: "worker-app/user",
           public_id: `test ${Date.now()}`,

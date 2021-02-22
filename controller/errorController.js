@@ -87,26 +87,26 @@
 const app = require("../app");
 const AppError = require("../utils/appError");
 
-const handleValidationErrorDB = (err) => {
-  const errors = Object.values(err.errors).map((el) => el.message);
+const handleValidationErrorDB = err => {
+  const errors = Object.values(err.errors).map(el => el.message);
 
   const message = `Invalid input data. ${errors.join(". ")}`;
   return new AppError(message, 400);
 };
 
-const handleCastErrorDB = (err) => {
+const handleCastErrorDB = err => {
   const message = `Invalid ${err.path === "_id" ? "id" : err.path}: ${
     err.value
   }.`;
   return new AppError(message, 400);
 };
 
-const handleNoData = (err) => {
+const handleNoData = err => {
   const message = err.message;
   return new AppError(message, 400);
 };
 
-const handleDuplicateFieldsDB = (err) => {
+const handleDuplicateFieldsDB = err => {
   const value = err.errmsg.match(/(["'])(\\?.)*?\1/)[0];
   // console.log(value);
   const message = `User exists with same email, Please try to login!`;
@@ -115,8 +115,12 @@ const handleDuplicateFieldsDB = (err) => {
   return new AppError(message, 400);
 };
 
-const invalidData = (err) => {
+const invalidData = err => {
   return new AppError("Invalid Data provided", err.status);
+};
+
+const MulterError = err => {
+  return new AppError("Select Maximum 4 images", 400);
 };
 
 const sendErrorDev = (err, res) => {
@@ -126,7 +130,7 @@ const sendErrorDev = (err, res) => {
     error: err,
     name: err.name,
     message: err.message,
-    stack: err.stack,
+    stack: err.stack
   });
 };
 
@@ -136,7 +140,7 @@ const sendErrorProd = (err, res) => {
   if (err.isOperational) {
     res.status(err.statusCode).json({
       status: err.status,
-      message: err.message,
+      message: err.message
     });
 
     // Programming or other unknown error: don't leak error details
@@ -147,7 +151,7 @@ const sendErrorProd = (err, res) => {
     // 2) Send generic message
     res.status(500).json({
       status: "error",
-      message: "Something went very wrong!",
+      message: "Something went very wrong!"
     });
   }
 };
@@ -168,6 +172,7 @@ module.exports = (err, req, res, next) => {
     if (err.code === 11000) error = handleDuplicateFieldsDB(err);
     if (err.name === "Error") error = handleNoData(err);
     if (err.code === 60200) error = invalidData(err);
+    if (err.name === "MulterError") error = MulterError(err);
     sendErrorProd(error, res);
   }
 };

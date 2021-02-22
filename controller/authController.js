@@ -71,7 +71,7 @@ exports.signIn = catchAsync(async (req, res, next) => {
     return next(new AppError("Incorrect email or password", 401));
   }
 
-  console.log(req.user);
+  // console.log(req.user);
   res.status(200).json({
     status: "success",
     token: signToken(user._id)
@@ -194,7 +194,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
     await user.save({ validateBeforeSave: false });
-    console.log(err);
+    // console.log(err);
     return next(new AppError("Error sending email try again later", 500));
   }
 });
@@ -263,14 +263,14 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 });
 
 exports.updateMe = catchAsync(async (req, res, next) => {
-  let response;
-  console.log("in updateMe");
+  // let response;
+  // console.log("in updateMe");
   // if (req.file) {
   // try {
   // console.log(req.file);
   parser.format(".jpeg", req.file.buffer);
   // console.log("content: ", parser.content);
-  response = await cloudinary.uploader.upload(parser.content, {
+  const response = await cloudinary.uploader.upload(parser.content, {
     folder: "worker-app/user",
     public_id: `test ${Date.now()}`,
     use_filename: true

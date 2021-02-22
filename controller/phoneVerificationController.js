@@ -11,7 +11,7 @@ exports.sendOtp = catchAsync(async (req, res, next) => {
     .services(process.env.TWILIO_SERVICE_ID)
     .verifications.create({
       to: "+91" + req.body.phone,
-      channel: "sms",
+      channel: "sms"
     });
 
   //   console.log(verification);
@@ -19,7 +19,7 @@ exports.sendOtp = catchAsync(async (req, res, next) => {
     return next(new AppError("Something went wrong,try again!", 500));
   res.status(200).json({
     status: "success",
-    message: "Verification code sent successfull",
+    message: "Verification code sent successfull"
   });
 });
 exports.verifyOtp = catchAsync(async (req, res, next) => {
@@ -27,7 +27,7 @@ exports.verifyOtp = catchAsync(async (req, res, next) => {
     .services(process.env.TWILIO_SERVICE_ID)
     .verificationChecks.create({
       to: "+91" + req.body.phone,
-      code: req.body.code,
+      code: req.body.code
     });
 
   // console.log(verification_check.status);
@@ -39,11 +39,11 @@ exports.verifyOtp = catchAsync(async (req, res, next) => {
   const user = await User.findByIdAndUpdate(
     req.user._id,
     {
-      isPhoneVerified: true,
+      isPhoneVerified: true
     },
     {
       runValidators: true,
-      new: true,
+      new: true
     }
   );
   // console.log(user);
@@ -56,7 +56,7 @@ exports.verifyOtp = catchAsync(async (req, res, next) => {
   res.status(200).json({
     data: {
       // verification_check,
-      user,
-    },
+      user
+    }
   });
 });
