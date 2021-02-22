@@ -265,14 +265,18 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   let response;
   console.log("in updateMe");
   if (req.file) {
-    console.log(req.file);
-    parser.format(".jpeg", req.file.buffer);
-    console.log("content: ", parser.content);
-    response = await cloudinary.uploader.upload(parser.content, {
-      folder: "worker-app/user",
-      public_id: `test ${Date.now()}`,
-      use_filename: true,
-    });
+    try {
+      console.log(req.file);
+      parser.format(".jpeg", req.file.buffer);
+      console.log("content: ", parser.content);
+      response = await cloudinary.uploader.upload(parser.content, {
+        folder: "worker-app/user",
+        public_id: `test ${Date.now()}`,
+        use_filename: true,
+      });
+    } catch (err) {
+      throw err;
+    }
   }
 
   // const patch = {
