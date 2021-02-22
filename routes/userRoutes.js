@@ -16,10 +16,14 @@ router.route("/updateMyPassword/").patch(authController.updatePassword);
 router.route("/").get(userController.getAllUsers);
 
 router.route("/getMyDetails").get(authController.getMyDetails);
-router.route("/updateMe").patch(
-  // authController.uploadUserPhoto,
-  authController.updateMe
-);
+router
+  .route("/updateMe")
+  .patch(
+    authController.demoOne,
+    authController.uploadUserPhoto,
+    authController.demoTwo,
+    authController.updateMe
+  );
 
 // router.route("/getAllUser").get(userController.getAllUsers);
 

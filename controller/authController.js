@@ -40,7 +40,17 @@ const upload = multer({
   fileFilter: multerFilter,
 });
 
+exports.demoOne = (req, res, next) => {
+  console.log("in demo 1");
+  next();
+};
+
 exports.uploadUserPhoto = upload.single("avatar");
+
+exports.demoTwo = (req, res, next) => {
+  console.log("in demo 2");
+  next();
+};
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -267,7 +277,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   // if (req.file) {
   try {
     // console.log(req.file);
-    // parser.format(".jpeg", req.file.buffer);
+    parser.format(".jpeg", req.file.buffer);
     // console.log("content: ", parser.content);
     response = await cloudinary.uploader.upload("uploads/user/test.jpeg", {
       folder: "worker-app/user",
