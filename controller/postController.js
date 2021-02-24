@@ -167,7 +167,7 @@ exports.addCompletedBy = catchAsync(async (req, res, next) => {
   //check if the post belongs to that user
   if (req.user._id + "" !== post.user + "")
     return next(new AppError("This post doesn't belongs to you", 401));
-  if (!req.body.completedBy)
+  if (!req.body.completedBy || req.body.completedBy.length <= 0)
     return next(
       new AppError("minimum 1 person required who completed the job", 400)
     );
