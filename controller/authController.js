@@ -263,11 +263,6 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 });
 
 exports.updateMe = catchAsync(async (req, res, next) => {
-  // let response;
-  // console.log("in updateMe");
-  // if (req.file) {
-  // try {
-  // console.log(req.file);
   parser.format(".jpeg", req.file.buffer);
   // console.log("content: ", parser.content);
   const response = await cloudinary.uploader.upload(parser.content, {
@@ -275,19 +270,22 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     public_id: `test ${Date.now()}`,
     use_filename: true
   });
-  // } catch (err) {
-  //   // throw err;
-  //   console.log(err);
-  // }
-  // }
+  let { skills } = req.body;
+  skills =
+    typeof req.body.skills === "string"
+      ? new Set([...req.user.skills, req.body.skills])
+      : new Set([...skills, ...req.user.skills]);
+  skills = Array.from(skills);
 
   const patch = {
     photoUrl: req.file ? response.url : req.user.photoUrl,
-    name: req.body.name ? req.body.name : req.user.name
+    name: req.body.name ? req.body.name : req.user.name,
+    skills: skills
   };
   const updatedUser = await User.findByIdAndUpdate(req.user._id, patch, {
     new: true
   });
+
   req.user = updatedUser;
 
   res.status(200).json({
