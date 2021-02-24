@@ -26,4 +26,12 @@ router
   .patch(postController.updatePost);
 // mYrjVDVCjPpd6LAT
 
+router
+  .route("/updateCompletedStatus/:id")
+  .patch(
+    authController.protect,
+    authController.restrictTo("recruiter"),
+    postController.addCompletedBy
+  );
+
 module.exports = router;

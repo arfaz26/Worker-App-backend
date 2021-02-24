@@ -6,41 +6,47 @@ const postSchema = new mongoose.Schema({
     required: [true, "Post must have a title!"],
     trim: true,
     minlength: [6, "A post must have minimum 6 characters"],
-    maxlength: [40, "A post must have maximum 40 characters"],
+    maxlength: [40, "A post must have maximum 40 characters"]
   },
   location: {
     type: String,
-    required: [true, "Post must have a location"],
+    required: [true, "Post must have a location"]
   },
   user: {
     type: mongoose.Schema.ObjectId,
     ref: "User",
-    required: [true, "Post must belong to a user"],
+    required: [true, "Post must belong to a user"]
   },
+  completedBy: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: "User"
+    }
+  ],
   images: [String],
   category: {
     type: String,
     required: [true, "Post must have a category"],
     enum: {
       values: ["helper", "plumber", "paint", "other"],
-      message: "category is either: helper, plumber, paint,other",
-    },
+      message: "category is either: helper, plumber, paint,other"
+    }
   },
   postedAt: {
     type: Date,
-    default: new Date(),
+    default: new Date()
   },
   __v: {
     type: Number,
-    select: false,
+    select: false
   },
   contact: {
-    type: Number,
+    type: Number
   },
   isActive: {
     type: Boolean,
-    default: true,
-  },
+    default: true
+  }
 });
 
 // description, range budget, active

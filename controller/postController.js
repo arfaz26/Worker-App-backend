@@ -158,3 +158,25 @@ exports.getMyPosts = catchAsync(async (req, res, next) => {
     }
   });
 });
+
+exports.addCompletedBy = catchAsync(async (req, res, next) => {
+  // check if the post is active
+  const post = await Post.findById(req.params.id);
+  if (!post.isActive) return next(new AppError("This post is inactive", 400));
+
+  //check if the post belongs to that user
+  if (req.user._id + "" !== post.user + "")
+    return next(new AppError("This post doesn't belongs to you", 401));
+
+  // mark the post as inactive and update the completed list
+  post.completedBy = req.body.completedBy;
+  post.isActive = false;
+  const updatedPost = await post.save();
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      updatedPost
+    }
+  });
+});

@@ -12,7 +12,7 @@ exports.createApplication = catchAsync(async (req, res, next) => {
 
   // check if user has already applied for the post
   const exsitingCheck = await Application.find({
-    $and: [{ post: req.params.id }, { user: req.user._id }],
+    $and: [{ post: req.params.id }, { user: req.user._id }]
   });
 
   if (JSON.stringify(exsitingCheck) !== JSON.stringify([]))
@@ -20,13 +20,13 @@ exports.createApplication = catchAsync(async (req, res, next) => {
   // create application
   const application = await Application.create({
     user: req.user._id,
-    post: req.params.id,
+    post: req.params.id
   });
   res.status(201).json({
     status: "success",
     data: {
-      application,
-    },
+      application
+    }
   });
 });
 
@@ -34,11 +34,11 @@ exports.getAllApplications = catchAsync(async (req, res, next) => {
   const query = Application.find()
     .populate({
       path: "user",
-      select: "name email",
+      select: "name email"
     })
     .populate({
       path: "post",
-      select: "_id",
+      select: "_id"
     });
   const applications = await query;
 
@@ -46,8 +46,8 @@ exports.getAllApplications = catchAsync(async (req, res, next) => {
     status: "success",
     result: applications.length,
     data: {
-      applications,
-    },
+      applications
+    }
   });
 });
 
@@ -62,28 +62,28 @@ exports.getCurrentPostApplications = catchAsync(async (req, res, next) => {
     .sort("appliedAt")
     .populate({
       path: "user",
-      select: "name email",
+      select: "name email"
     });
   const applications = await query;
   res.status(200).json({
     status: "success",
     result: applications.length,
     data: {
-      applications,
-    },
+      applications
+    }
   });
 });
 
 exports.getMyApplications = catchAsync(async (req, res, next) => {
   const applications = await Application.find({
-    user: req.user._id,
+    user: req.user._id
   });
   res.status(200).json({
     status: "success",
     result: applications.length,
     data: {
-      applications,
-    },
+      applications
+    }
   });
 });
 
@@ -97,7 +97,7 @@ exports.updateApplicationStatus = catchAsync(async (req, res, next) => {
     return next(new AppError("post doesn't belongs to you", 401));
 
   const exsitingCheck = await Notification.find({
-    $and: [{ post: post._id }, { user: application.user }],
+    $and: [{ post: post._id }, { user: application.user }]
   });
 
   if (JSON.stringify(exsitingCheck) !== JSON.stringify([]))
@@ -105,11 +105,11 @@ exports.updateApplicationStatus = catchAsync(async (req, res, next) => {
   const updatedApplication = await Application.findByIdAndUpdate(
     applicationId,
     {
-      status: req.body.changeStatus,
+      status: req.body.changeStatus
     },
     {
       runValidators: true,
-      new: true,
+      new: true
     }
   );
   const subMessage =
@@ -118,12 +118,12 @@ exports.updateApplicationStatus = catchAsync(async (req, res, next) => {
       : "Apply for other jobs";
 
   const notification = await Notification.create({
-    message: `Your application for ${post.title} at ${post.location} is ${updatedApplication.status}. ${subMessage}`,
+    message: `Your application for "${post.title}" at ${post.location} is ${updatedApplication.status}. ${subMessage}`,
     user: application.user,
-    post: post._id,
+    post: post._id
   });
   res.status(200).json({
     status: "success",
-    message: "Data updated",
+    message: "Data updated"
   });
 });
