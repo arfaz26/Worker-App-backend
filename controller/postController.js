@@ -167,6 +167,10 @@ exports.addCompletedBy = catchAsync(async (req, res, next) => {
   //check if the post belongs to that user
   if (req.user._id + "" !== post.user + "")
     return next(new AppError("This post doesn't belongs to you", 401));
+  if (!req.body.completedBy)
+    return next(
+      new AppError("minimum 1 person required who completed the job", 400)
+    );
 
   // mark the post as inactive and update the completed list
   post.completedBy = req.body.completedBy;
