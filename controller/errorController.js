@@ -143,6 +143,7 @@ const sendErrorProd = (err, res) => {
   console.log(`error operational custom: ${err.isOperational}`);
 
   if (err.isOperational) {
+    console.log("in if");
     res.status(err.statusCode).json({
       status: err.status,
       message: err.message
@@ -150,6 +151,8 @@ const sendErrorProd = (err, res) => {
 
     // Programming or other unknown error: don't leak error details
   } else {
+    console.log("in else");
+
     // 1) Log error
     console.error("ERROR 💥", err);
 
