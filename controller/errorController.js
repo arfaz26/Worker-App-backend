@@ -103,7 +103,8 @@ const handleCastErrorDB = err => {
 
 const handleNoData = err => {
   const message = err.message;
-  return new AppError(message, 400);
+  const errCode = err.statusCode;
+  return new AppError(message, errCode);
 };
 
 const handleDuplicateFieldsDB = err => {
@@ -125,6 +126,10 @@ const MulterError = err => {
 
 const sendErrorDev = (err, res) => {
   console.log("in send errorDEv");
+  console.log(`code: ${err.statusCode}`);
+  // console.log()
+  console.log(err);
+
   res.status(err.statusCode).json({
     status: err.status,
     error: err,
@@ -138,16 +143,16 @@ const sendErrorProd = (err, res) => {
   // Operational, trusted error: send message to client
   console.log("in err sendPRod");
 
-  // console.log(err);
-  console.log(`error code custom: ${err.statusCode}`);
-  console.log(`error operational custom: ${err.isOperational}`);
-  console.log(err.status);
+  console.log(err);
+  // console.log(`error code custom: ${err.statusCode}`);
+  // console.log(`error operational custom: ${err.isOperational}`);
+  // console.log(err.status);
   if (err.isOperational) {
-    console.log("in if");
+    // console.log("in if");
 
-    console.log(`error statuscode in if: ${err.statusCode}`);
-    console.log(`error operational in if: ${err.isOperational}`);
-    console.log(` in if ${err.status}`);
+    // console.log(`error statuscode in if: ${err.statusCode}`);
+    // console.log(`error operational in if: ${err.isOperational}`);
+    // console.log(` in if ${err.status}`);
 
     res.status(err.statusCode).json({
       status: err.status,
@@ -156,7 +161,7 @@ const sendErrorProd = (err, res) => {
 
     // Programming or other unknown error: don't leak error details
   } else {
-    console.log("in else");
+    // console.log("in else");
 
     // 1) Log error
     console.error("ERROR 💥", err);

@@ -109,8 +109,7 @@ exports.restrictTo = (...roles) => {
 
 exports.phoneVerificationCheck = catchAsync(async (req, res, next) => {
   if (!req.user.isPhoneVerified)
-    return next(new AppError("Please verify your phone number", 404));
-  next();
+    return next(new AppError("Please verify your phone number", 401));
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
