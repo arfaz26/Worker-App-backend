@@ -138,23 +138,23 @@ const sendErrorProd = (err, res) => {
   // Operational, trusted error: send message to client
   console.log("in err sendPRod");
   // console.log(err);
-  if (err.isOperational) {
-    res.status(err.statusCode).json({
-      status: err.status,
-      message: err.message
-    });
+  // if (err.isOperational) {
+  res.status(err.statusCode).json({
+    status: err.status,
+    message: err.message
+  });
 
-    // Programming or other unknown error: don't leak error details
-  } else {
-    // 1) Log error
-    console.error("ERROR 💥", err);
+  // Programming or other unknown error: don't leak error details
+  // } else {
+  //   // 1) Log error
+  //   console.error("ERROR 💥", err);
 
-    // 2) Send generic message
-    res.status(500).json({
-      status: "error",
-      message: "Something went very wrong!"
-    });
-  }
+  //   // 2) Send generic message
+  //   res.status(500).json({
+  //     status: "error",
+  //     message: "Something went very wrong!"
+  //   });
+  // }
 };
 
 module.exports = (err, req, res, next) => {
