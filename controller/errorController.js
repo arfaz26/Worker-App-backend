@@ -137,7 +137,11 @@ const sendErrorDev = (err, res) => {
 const sendErrorProd = (err, res) => {
   // Operational, trusted error: send message to client
   console.log("in err sendPRod");
+
   // console.log(err);
+  console.log(`error code custom: ${err.statusCode}`);
+  console.log(`error operational custom: ${err.isOperational}`);
+
   if (err.isOperational) {
     res.status(err.statusCode).json({
       status: err.status,
