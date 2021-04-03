@@ -120,6 +120,7 @@ exports.createPost = catchAsync(async (req, res, next) => {
   };
 
   const post = await Post.create(postData);
+  console.log(post);
   res.status(201).json({
     status: "success",
     data: {
