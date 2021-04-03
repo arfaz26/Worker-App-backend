@@ -128,7 +128,7 @@ const sendErrorDev = (err, res) => {
   console.log("in send errorDEv");
   console.log(`code: ${err.statusCode}`);
   // console.log()
-  console.log(err);
+  // console.log(err);
 
   res.status(err.statusCode).json({
     status: err.status,

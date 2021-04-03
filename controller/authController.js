@@ -98,6 +98,7 @@ exports.signUp = catchAsync(async (req, res, next) => {
 
 exports.restrictTo = (...roles) => {
   return (req, res, next) => {
+    console.log("in restrict to");
     if (!roles.includes(req.user.role)) {
       return next(
         new AppError("You do not have permission to perform this action", 403)
@@ -108,12 +109,15 @@ exports.restrictTo = (...roles) => {
 };
 
 exports.phoneVerificationCheck = catchAsync(async (req, res, next) => {
+  console.log("in phoneverfication check");
   if (!req.user.isPhoneVerified)
     return next(new AppError("Please verify your phone number", 401));
+  next();
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
   // 1) getting token if its there
+  console.log("in protect");
   let token;
   if (
     req.headers.authorization &&

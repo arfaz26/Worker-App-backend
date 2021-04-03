@@ -35,6 +35,7 @@ const upload = multer({
 exports.uploadPostImages = upload.array("images", 4);
 
 exports.resizeImages = catchAsync(async (req, res, next) => {
+  console.log("resizeImages");
   req.body.imagesArray = [];
   if (!req.files) return next();
 
@@ -58,6 +59,7 @@ exports.resizeImages = catchAsync(async (req, res, next) => {
 });
 
 exports.uploadPostImagesToCloud = catchAsync(async (req, res, next) => {
+  console.log("uploadPostImagesToCloud");
   if (req.files) {
     req.body.imagesUrl = [];
     await Promise.all(
@@ -99,6 +101,7 @@ exports.getAllPosts = catchAsync(async (req, res, next) => {
 
 exports.createPost = catchAsync(async (req, res, next) => {
   // console.log(req.body.imagesArray);
+  console.log("createPost");
   const postData = {
     title: req.body.title,
     location: req.body.location,
