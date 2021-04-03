@@ -115,8 +115,8 @@ exports.createPost = catchAsync(async (req, res, next) => {
     location: req.body.location,
     contact: req.body.contact,
     user: req.user._id,
-    category: req.body.category
-    // images: req.body.imagesUrl ? req.body.imagesUrl : []
+    category: req.body.category,
+    images: req.body.imagesUrl ? req.body.imagesUrl : []
   };
 
   const post = await Post.create(postData);
