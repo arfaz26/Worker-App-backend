@@ -103,7 +103,7 @@ const handleCastErrorDB = err => {
 
 const handleNoData = err => {
   const message = err.message;
-  return new AppError(message, 400);
+  return new AppError(message, err.statusCode);
 };
 
 const handleDuplicateFieldsDB = err => {
@@ -137,6 +137,7 @@ const sendErrorDev = (err, res) => {
 const sendErrorProd = (err, res) => {
   // Operational, trusted error: send message to client
   console.log("in err sendPRod");
+  // console.log(err);
   if (err.isOperational) {
     res.status(err.statusCode).json({
       status: err.status,
@@ -166,7 +167,9 @@ module.exports = (err, req, res, next) => {
     sendErrorDev(err, res);
   } else if (process.env.NODE_ENV === "production") {
     let error = { ...err };
-    // console.log(err);
+    console.log(` error name: ${err.name}`);
+    console.log(` error code: ${err.statusCode}`);
+
     if (err.name === "ValidationError") error = handleValidationErrorDB(error);
     if (err.name === "CastError") error = handleCastErrorDB(error);
     if (err.code === 11000) error = handleDuplicateFieldsDB(err);
