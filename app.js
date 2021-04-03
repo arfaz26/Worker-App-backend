@@ -29,7 +29,7 @@ app.use((req, res, next) => {
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+  api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
 app.use("/api/v1/posts", postRouter);
@@ -38,8 +38,8 @@ app.use("/api/v1/apply", applicationRouter);
 app.use("/api/v1/verifyPhone", phoneVerifyRouter);
 app.use("/api/v1/notifications", notificationRouter);
 
-app.all("*", (req, res, next) => {
-  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+app.all("/api/v1/*", (req, res, next) => {
+  next(new AppError(`Can't find new ${req.originalUrl} on this server!`, 404));
 });
 
 app.use(globalErrorHandler);
