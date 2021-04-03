@@ -108,7 +108,7 @@ exports.createPost = catchAsync(async (req, res, next) => {
   console.log(req.body.location);
   console.log(req.body.category);
 
-  console.log(`body: ${req.body}`);
+  // console.log(`body: ${req.body}`);
 
   const postData = {
     title: req.body.title,
