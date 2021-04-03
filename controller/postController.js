@@ -79,7 +79,7 @@ exports.getAllPosts = catchAsync(async (req, res, next) => {
   // console.log(req.query);
 
   // Execute query
-  const features = new ApiFeatures(Post.find(), req.query)
+  const features = new ApiFeatures(Post.find(), req.query, "-postedAt")
     .filter()
     .sort()
     .limitField()
@@ -130,11 +130,32 @@ exports.getPost = catchAsync(async (req, res, next) => {
   });
 });
 exports.updatePost = catchAsync(async (req, res, next) => {
-  const post = await Post.findByIdAndUpdate(req.params.id, req.body, {
+  const data = { ...req.body };
+  const allowed = ["title", "location", "contact", "category"];
+  const filtered = Object.keys(data)
+    .filter(key => allowed.includes(key))
+    .reduce((obj, key) => {
+      obj[key] = data[key];
+      return obj;
+    }, {});
+
+  // const post = await Post.findByIdAndUpdate(req.params.id, filtered, {
+  //   runValidators: true,
+  //   new: true
+  // });
+
+  let post = await Post.findById(req.params.id);
+
+  if (!post) return next(new AppError("No document found with that ID", 404));
+
+  if (req.user._id + "" !== post.user + "")
+    return next(new AppError("This post doesn't belongs to you", 401));
+
+  post = await Post.findByIdAndUpdate(req.params.id, filtered, {
     runValidators: true,
     new: true
   });
-  if (!post) return next(new AppError("No document found with that ID", 404));
+
   res.status(200).json({
     status: "success",
     data: {
