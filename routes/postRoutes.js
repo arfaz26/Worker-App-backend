@@ -6,26 +6,24 @@ const router = express.Router();
 
 router.route("/").get(postController.getAllPosts);
 
-router
-  .route("/create")
-  .post(
-    authController.protect,
-    authController.restrictTo("recruiter"),
-    authController.phoneVerificationCheck,
-    postController.uploadPostImages,
-    postController.resizeImages,
-    postController.uploadPostImagesToCloud,
-    postController.createPost
-  );
-
-router.route("/createPost").post(
+router.route("/create").post(
   authController.protect,
-  // authController.restrictTo("recruiter"),
-  postController.uploadPostImages,
-  postController.resizeImages,
-  postController.uploadPostImagesToCloud,
+  authController.restrictTo("recruiter"),
+  authController.phoneVerificationCheck,
+  // postController.uploadPostImages,
+  // postController.resizeImages,
+  // postController.uploadPostImagesToCloud,
   postController.createPost
 );
+
+// router.route("/createPost").post(
+//   authController.protect,
+//   // authController.restrictTo("recruiter"),
+//   postController.uploadPostImages,
+//   postController.resizeImages,
+//   postController.uploadPostImagesToCloud,
+//   postController.createPost
+// );
 
 router
   .route("/getMyPosts")

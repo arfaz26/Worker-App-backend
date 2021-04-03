@@ -102,20 +102,20 @@ exports.getAllPosts = catchAsync(async (req, res, next) => {
 exports.createPost = catchAsync(async (req, res, next) => {
   // console.log(req.body.imagesArray);
   console.log("createPost");
-  const postData = {
-    title: req.body.title,
-    location: req.body.location,
-    contact: req.body.contact,
-    user: req.user._id,
-    category: req.body.category,
-    images: req.body.imagesUrl ? req.body.imagesUrl : []
-  };
+  // const postData = {
+  //   title: req.body.title,
+  //   location: req.body.location,
+  //   contact: req.body.contact,
+  //   user: req.user._id,
+  //   category: req.body.category,
+  //   images: req.body.imagesUrl ? req.body.imagesUrl : []
+  // };
 
-  const post = await Post.create(postData);
+  // const post = await Post.create(postData);
   res.status(201).json({
     status: "success",
     data: {
-      post
+      post: "created"
     }
   });
 });
