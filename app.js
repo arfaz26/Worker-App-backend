@@ -38,7 +38,7 @@ app.use("/api/v1/apply", applicationRouter);
 app.use("/api/v1/verifyPhone", phoneVerifyRouter);
 app.use("/api/v1/notifications", notificationRouter);
 
-app.all("/api/v1/*", (req, res, next) => {
+app.all("*", (req, res, next) => {
   next(new AppError(`Can't find new ${req.originalUrl} on this server!`, 404));
 });
 

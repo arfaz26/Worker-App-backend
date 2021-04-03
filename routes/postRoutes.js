@@ -4,17 +4,18 @@ const authController = require("../controller/authController");
 
 const router = express.Router();
 
-router.route("/").get(postController.getAllPosts);
-
-router.route("/create").post(
-  authController.protect,
-  authController.restrictTo("recruiter"),
-  authController.phoneVerificationCheck,
-  // postController.uploadPostImages,
-  // postController.resizeImages,
-  // postController.uploadPostImagesToCloud,
-  postController.createPost
-);
+router
+  .route("/")
+  .get(postController.getAllPosts)
+  .post(
+    authController.protect,
+    authController.restrictTo("recruiter"),
+    authController.phoneVerificationCheck,
+    // postController.uploadPostImages,
+    // postController.resizeImages,
+    // postController.uploadPostImagesToCloud,
+    postController.createPost
+  );
 
 // router.route("/createPost").post(
 //   authController.protect,
