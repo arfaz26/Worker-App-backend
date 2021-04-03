@@ -8,7 +8,7 @@ router
   .route("/")
   .get(postController.getAllPosts)
   .post(
-    authController.protect,
+    // authController.protect,
     authController.restrictTo("recruiter"),
     authController.phoneVerificationCheck,
     postController.uploadPostImages,
