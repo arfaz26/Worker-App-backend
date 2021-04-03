@@ -141,9 +141,14 @@ const sendErrorProd = (err, res) => {
   // console.log(err);
   console.log(`error code custom: ${err.statusCode}`);
   console.log(`error operational custom: ${err.isOperational}`);
-
+  console.log(err.status);
   if (err.isOperational) {
     console.log("in if");
+
+    console.log(`error statuscode in if: ${err.statusCode}`);
+    console.log(`error operational in if: ${err.isOperational}`);
+    console.log(` in if ${err.status}`);
+
     res.status(err.statusCode).json({
       status: err.status,
       message: err.message
