@@ -102,7 +102,7 @@ exports.getAllPosts = catchAsync(async (req, res, next) => {
 exports.createPost = catchAsync(async (req, res, next) => {
   // console.log(req.body.imagesArray);
   console.log("createPost");
-  console.log(`body: ${req.body}`);
+  // console.log(`body: ${req.body}`);
 
   console.log(req.body.title);
   console.log(req.body.location);
