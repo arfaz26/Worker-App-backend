@@ -17,15 +17,6 @@ router
     postController.createPost
   );
 
-// router.route("/createPost").post(
-//   authController.protect,
-//   // authController.restrictTo("recruiter"),
-//   postController.uploadPostImages,
-//   postController.resizeImages,
-//   postController.uploadPostImagesToCloud,
-//   postController.createPost
-// );
-
 router
   .route("/getMyPosts")
   .get(authController.protect, postController.getMyPosts);
