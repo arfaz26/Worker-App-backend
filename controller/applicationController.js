@@ -78,10 +78,6 @@ exports.getMyApplications = catchAsync(async (req, res, next) => {
   const applications = await Application.find({
     user: req.user._id
   }).populate("post", "title");
-  //   {
-  //   path: "post",
-  //   select: "title"
-  // }
 
   res.status(200).json({
     status: "success",

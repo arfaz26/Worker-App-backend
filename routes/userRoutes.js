@@ -20,6 +20,9 @@ router
   .route("/updateMe")
   .patch(authController.uploadUserPhoto, authController.updateMe);
 
+router
+  .route("/getDetailOfUser/:id")
+  .get(authController.protect, userController.getDetail);
 // router.route("/getAllUser").get(userController.getAllUsers);
 
 module.exports = router;
